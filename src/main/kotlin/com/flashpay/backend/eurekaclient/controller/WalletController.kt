@@ -98,7 +98,7 @@ class WalletController(val walletService : WalletService) {
 
     /************************************* Sell Investment *************************************/
     @Operation(summary = "Sell Investment")
-    @PutMapping("/sellinvestment")
+    @PutMapping("/wallet/sellinvestment")
     fun sellInvestment(@RequestParam jwtToken : String?, @RequestParam investmentAccountName : String, @RequestParam amount : Double) : ResponseEntity<UserWallet> {
         try {
             if(jwtToken == null) {
