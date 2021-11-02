@@ -50,6 +50,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
             throw UserNotFoundException("User With Phone Number \"$phoneNumber\" Not Found")
         }
         else if(retrievedWallet.accountType == "Admin" || retrievedWallet.accountType == "Business" || retrievedWallet.accountType == "Service" || retrievedWallet.accountType == "Utility" || retrievedWallet.accountType == "Charity" || retrievedWallet.accountType == "Investment") {
+            print(retrievedWallet.accountType)
             throw ReadOnlyAccountException("User Account With \"$phoneNumber\" Is Read Only")
         }
         else if(retrievedWallet.accountStatus == "Inactive") {
@@ -103,7 +104,9 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                         updatedWallet.userName,
                         amount,
                         "Credited",
+                        "-",
                         "Success"
+
                     )
 
                     retrievedWallet.transactions?.add(bill)
@@ -176,6 +179,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                         updatedCard.cardName,
                         amount,
                         "Debited",
+                        "-",
                         "Success"
                     )
 
@@ -190,6 +194,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
     }
 
     /************************************* Payment *************************************/
+    @Suppress("EqualsBetweenInconvertibleTypes")
     override fun payment(phoneNumber1 : Long, phoneNumber2 : Long, amount : Double) : UserWallet? {
         val adminAccount : UserWallet? = userWalletDao.findAdminAccount()
         val userAccount1 : UserWallet? = userWalletDao.findPhoneNumber(phoneNumber1)
@@ -233,11 +238,15 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
             val formattingPattern = DateTimeFormatter.ofPattern(DateTimeConstants.pattern)
             val transactionDateTime = formattingPattern.format(zonedDateTime)
 
+            var userTransactionReward = "-"
+            var businessTransactionReward = "-"
+
             if(amount >= 500) {
                 updatedUserAccount1.accountBalance += rewardPercentage * amount
                 updatedAdminAccount.accountBalance -= rewardPercentage * amount
                 updatedUserAccount1.rewards += rewardPercentage * amount
                 updatedAdminAccount.rewards += rewardPercentage * amount
+                userTransactionReward = (rewardPercentage * amount).toString()
             }
 
             var transactionToAccountType : String? = null
@@ -248,6 +257,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                         updatedAdminAccount.accountBalance -= rewardPercentage * amount
                         updatedUserAccount2.rewards += rewardPercentage * amount
                         updatedAdminAccount.rewards += rewardPercentage * amount
+                        businessTransactionReward = (rewardPercentage * amount).toString()
                     }
                     updatedUserAccount1.totalPayments += amount
                     transactionToAccountType = "Payment"
@@ -296,6 +306,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                 updatedUserAccount2.userName,
                 amount,
                 "Debited ($transactionToAccountType)",
+                userTransactionReward,
                 "Success"
             )
             val bill2 = Transaction(
@@ -306,6 +317,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                 updatedUserAccount2.userName,
                 amount,
                 "Credited (Transfer)",
+                businessTransactionReward,
                 "Success"
             )
 
@@ -374,6 +386,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                 updatedUserAccount1.userName,
                 amount,
                 "Credited (Investment Sale)",
+                "-",
                 "Success"
             )
             val bill2 = Transaction(
@@ -384,6 +397,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                 updatedUserAccount1.userName,
                 amount,
                 "Debited (Investment Sale)",
+                "-",
                 "Success"
             )
 
@@ -422,6 +436,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
             toAccountId,
             toAccount,
             transactionAmount,
+            "-",
             "-",
             "Failure ($message)"
         )
