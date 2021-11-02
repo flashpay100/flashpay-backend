@@ -8,5 +8,6 @@ data class Transaction (
     var toAccount : String,
     var transactionAmount : Double,
     var transactionType : String?,
+    var transactionReward : String,
     var transactionStatus : String
 )
