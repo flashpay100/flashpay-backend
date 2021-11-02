@@ -246,7 +246,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                 updatedAdminAccount.accountBalance -= rewardPercentage * amount
                 updatedUserAccount1.rewards += rewardPercentage * amount
                 updatedAdminAccount.rewards += rewardPercentage * amount
-                userTransactionReward = (rewardPercentage * amount).toString()
+                userTransactionReward = String.format("%.2f", (rewardPercentage * amount))
             }
 
             var transactionToAccountType : String? = null
