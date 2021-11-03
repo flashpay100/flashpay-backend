@@ -257,7 +257,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                         updatedAdminAccount.accountBalance -= rewardPercentage * amount
                         updatedUserAccount2.rewards += rewardPercentage * amount
                         updatedAdminAccount.rewards += rewardPercentage * amount
-                        businessTransactionReward = (rewardPercentage * amount).toString()
+                        businessTransactionReward = String.format("%.2f", (rewardPercentage * amount))
                     }
                     updatedUserAccount1.totalPayments += amount
                     transactionToAccountType = "Payment"
@@ -268,6 +268,7 @@ class WalletServiceImplementation(val userWalletDao : UserWalletDao) : WalletSer
                     updatedUserAccount1.totalDonations += amount
                     updatedUserAccount2.rewards += donationAmount
                     updatedAdminAccount.totalDonations += donationAmount
+                    businessTransactionReward = donationAmount.toString()
                     transactionToAccountType = "Donation"
                     var donationAmount = amount
                     if(updatedUserAccount1.donations?.get(updatedUserAccount2.userName)?.equals(0) == false) {
